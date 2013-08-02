@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+export key=`ceph auth get-key client.admin` && sed -i "s/REPLACEME/${key}/g" /etc/cinder/cinder.conf
