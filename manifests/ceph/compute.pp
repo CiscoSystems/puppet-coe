@@ -37,7 +37,7 @@ class coe::ceph::compute(
   file { '/etc/ceph/uuid_injection.sh':
     content => template('coe/uuid_injection.erb'),
     mode    => 0750,
-    require => Exec['get-or-set volumes key'],
+    require => Exec['set-secret-value virsh'],
   }
 
   file { '/etc/ceph/client.admin':
@@ -57,11 +57,6 @@ class coe::ceph::compute(
   exec { 'copy the admin key to make cinder work':
     command => 'cp /etc/ceph/keyring /etc/ceph/client.admin',
     creates => '/etc/ceph/client.admin',
-  }
-
-  exec { 'get-or-set volumes key':
-    command => "/usr/bin/ceph auth get-or-create client.volumes mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=${poolname}' > /etc/ceph/client.volumes",
-    creates => "/etc/ceph/client.volumes",
     require => [ Package['ceph'], Ceph::Key['admin'] ],
   }
 
@@ -72,7 +67,7 @@ class coe::ceph::compute(
   }
 
   exec { 'set-secret-value virsh':
-    command => "/usr/bin/virsh secret-set-value --secret $(cat /etc/ceph/virsh.secret) --base64 $(ceph auth get-key client.volumes)",
+    command => "/usr/bin/virsh secret-set-value --secret $(cat /etc/ceph/virsh.secret) --base64 $(ceph auth get-key client.admin)",
     require => Exec['get-or-set virsh secret'],
   }
 
