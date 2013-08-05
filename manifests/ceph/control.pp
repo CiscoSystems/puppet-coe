@@ -9,7 +9,7 @@ class coe::ceph::control(
   class { 'ceph::apt::ceph': release => $::ceph_release }
 
   package { 'ceph-common':
-    ensure => present,
+    ensure  => present,
     require => Apt::Source['ceph'],
   }
 
@@ -24,7 +24,8 @@ class coe::ceph::control(
   }
 
   file { '/etc/ceph/keyring':
-    mode  => 0644,
+    mode    => 0644,
+    require => Exec['copy the admin key to make glance work'],
   }
 
   exec { 'copy the admin key to make glance work':
@@ -37,6 +38,7 @@ class coe::ceph::control(
     command => "/usr/bin/ceph osd pool create ${::glance_ceph_pool} 128",
     unless  => "/usr/bin/rados lspools | grep -sq ${::glance_ceph_pool}",
     require => Exec['copy the admin key to make glance work'],
+    notify  => [ Service['glance-api'], Service['glance-registry'] ],
   }
 
 }

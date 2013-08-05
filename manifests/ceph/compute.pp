@@ -10,12 +10,12 @@ class coe::ceph::compute(
   class { 'ceph::apt::ceph': release => $::ceph_release }
 
   package { 'ceph-common':
-    ensure => present,
+    ensure  => present,
     require => Apt::Source['ceph'],
   }
 
   package { 'python-ceph':
-    ensure => present,
+    ensure  => present,
     require => Apt::Source['ceph'],
   }
  
@@ -23,8 +23,8 @@ class coe::ceph::compute(
     ensure => present,
   }
 
-  class { 'ceph::conf':
-    fsid      => $fsid,
+  if !$::osd_on_compute {
+    class { 'ceph::conf': fsid => $fsid }
   }
 
   file { '/etc/ceph/secret.xml':
@@ -44,10 +44,11 @@ class coe::ceph::compute(
     require => Exec['copy the admin key to make cinder work'],
   }
 
-  file { '/etc/ceph/keyring':
-    mode  => 0644,
+   file { '/etc/ceph/keyring':
+    mode    => 0644,
+    require => Exec['copy the admin key to make cinder work'],
   }
-  
+ 
   exec { 'copy the admin key to make cinder work':
     command => 'cp /etc/ceph/keyring /etc/ceph/client.admin',
     creates => '/etc/ceph/client.admin',
@@ -72,10 +73,10 @@ class coe::ceph::compute(
   }
 
   exec { 'install key in cinder.conf':
-    command => '/etc/ceph/uuid_injection.sh',
+    command  => '/etc/ceph/uuid_injection.sh',
     provider => shell,
     require  => [ File['/etc/ceph/uuid_injection.sh'], Exec['create the pool'] ],
-    notify  => [ Service['cinder-volume'], Service['nova-compute'] ],
+    notify   => [ Service['cinder-volume'], Service['nova-compute'] ],
   }
 
 }
