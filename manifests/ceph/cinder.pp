@@ -1,4 +1,4 @@
-class coe::ceph::compute(
+class coe::ceph::cinder(
   $poolname = 'volumes',
   $fsid = $::ceph_monitor_fsid,
 ) {
@@ -53,12 +53,6 @@ class coe::ceph::compute(
   exec { 'set-secret-value virsh':
     command => "/usr/bin/virsh secret-set-value --secret $(cat /etc/ceph/virsh.secret) --base64 $(ceph auth get-key client.admin)",
     require => Exec['get-or-set virsh secret'],
-  }
-
-  exec { 'create the pool':
-    command => "/usr/bin/ceph osd pool create volumes 128",
-    unless  => "/usr/bin/rados lspools | grep -sq volumes",
-    require => Exec['set-secret-value virsh'],
   }
 
 }

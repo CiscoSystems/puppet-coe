@@ -8,11 +8,6 @@ class coe::ceph::control(
 
   class { 'ceph::apt::ceph': release => $::ceph_release }
 
-  package { 'ceph-common':
-    ensure  => present,
-    require => Apt::Source['ceph'],
-  }
-
   class { 'ceph::conf':
     fsid      => $fsid,
   }

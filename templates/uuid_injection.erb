@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-export uuid=`cat /etc/ceph/virsh.secret`
-sed -i "s,REPLACEME,${uuid},g" /etc/cinder/cinder.conf
-rm /etc/ceph/uuid_injection.sh
