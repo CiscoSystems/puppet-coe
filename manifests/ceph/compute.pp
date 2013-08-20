@@ -32,12 +32,6 @@ class coe::ceph::compute(
     require => Package['ceph-common'],
   }
 
-  file { '/etc/ceph/uuid_injection.sh':
-    content => template('coe/uuid_injection.erb'),
-    mode    => 0750,
-    require => Exec['set-secret-value virsh'],
-  }
-
   file { '/etc/ceph/client.admin':
     ensure  => present,
     mode    => 0644,
@@ -70,13 +64,6 @@ class coe::ceph::compute(
     command => "/usr/bin/ceph osd pool create volumes 128",
     unless  => "/usr/bin/rados lspools | grep -sq volumes",
     require => Exec['set-secret-value virsh'],
-  }
-
-  exec { 'install key in cinder.conf':
-    command  => '/etc/ceph/uuid_injection.sh',
-    provider => shell,
-    require  => [ File['/etc/ceph/uuid_injection.sh'], Exec['create the pool'] ],
-    notify   => [ Service['cinder-volume'], Service['nova-compute'] ],
   }
 
 }
