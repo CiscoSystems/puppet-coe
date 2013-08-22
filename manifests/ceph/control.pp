@@ -6,11 +6,8 @@ class coe::ceph::control(
 
   Package['ceph'] -> Ceph::Key <<| title == 'admin' |>>
 
-  class { 'ceph::apt::ceph': release => $::ceph_release }
-
   package { 'ceph-common':
     ensure  => present,
-    require => Apt::Source['ceph'],
   }
 
   class { 'ceph::conf':

@@ -7,11 +7,8 @@ class coe::ceph::cinder(
 
   Package['ceph'] -> Ceph::Key <<| title == 'admin' |>>
 
-  class { 'ceph::apt::ceph': release => $::ceph_release }
-
   package { 'python-ceph':
     ensure  => present,
-    require => Apt::Source['ceph'],
   }
  
   package { 'sysfsutils':

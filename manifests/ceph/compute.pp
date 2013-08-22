@@ -7,16 +7,12 @@ class coe::ceph::compute(
 
   Package['ceph'] -> Ceph::Key <<| title == 'admin' |>>
 
-  class { 'ceph::apt::ceph': release => $::ceph_release }
-
   package { 'ceph-common':
     ensure  => present,
-    require => Apt::Source['ceph'],
   }
 
   package { 'python-ceph':
     ensure  => present,
-    require => Apt::Source['ceph'],
   }
  
   package { 'sysfsutils':
