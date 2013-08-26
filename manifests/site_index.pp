@@ -20,4 +20,12 @@ class coe::site_index {
         group  => root,
         source => "puppet:///modules/coe/header-logo.png",
     }
+
+    file { "/var/www":
+        ensure => directory,
+        mode   => 0755,
+        owner  => root,
+        group  => root,
+    }
+
 }
