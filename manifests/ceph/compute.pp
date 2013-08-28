@@ -19,7 +19,7 @@ class coe::ceph::compute(
     ensure => present,
   }
 
-  if !$::osd_on_compute {
+  if ( (!$::osd_on_compute) and (!$::computes_have_mons) ) {
     class { 'ceph::conf': fsid => $fsid }
   }
 
