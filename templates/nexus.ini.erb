@@ -1,0 +1,14 @@
+[DRIVER]
+name=quantum.plugins.cisco.nexus.cisco_nexus_network_driver_v2.CiscoNEXUSDriver
+
+[SWITCH]
+<% @nexus_config.each do |switch_ip, hosts| %>
+[[<%= switch_ip %>]]
+<% hosts.each do |host_name, ports| %>
+[[[<%=host_name%>]]]
+ports=<%=ports%>
+<% end %>
+[[[ssh_port]]]
+ssh_port=22
+<% end %>
+
