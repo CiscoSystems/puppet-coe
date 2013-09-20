@@ -18,8 +18,8 @@ class coe::ceph::compute(
   package { 'sysfsutils':
     ensure => present,
   }
-
-  if ( (!$::osd_on_compute) and (!$::computes_have_mons) ) {
+  
+  if ( (!$::osd_on_compute) and (!$::computes_have_mons) and (!$::ceph_combo) ) {
     class { 'ceph::conf': fsid => $fsid }
   }
 
