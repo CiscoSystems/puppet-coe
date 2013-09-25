@@ -32,7 +32,7 @@ class coe::ceph::control(
   }
 
   exec { 'copy the admin key':
-    command => 'cp /etc/ceph/keyring /etc/ceph/client.admin',
+    command => '/bin/cp /etc/ceph/keyring /etc/ceph/client.admin',
     creates => '/etc/ceph/client.admin',
     require => Package['ceph'],
   }
@@ -45,5 +45,4 @@ class coe::ceph::control(
       notify  => [ Service['glance-api'], Service['glance-registry'] ],
     }
   }
-
 }

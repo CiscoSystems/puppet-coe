@@ -14,9 +14,9 @@ class coe::ceph::combined(
   }
 
   exec { 'copy the admin key to make cinder work':
-    command => 'cp /etc/ceph/keyring /etc/ceph/client.admin',
+    command => '/bin/cp /etc/ceph/keyring /etc/ceph/client.admin',
     creates => '/etc/ceph/client.admin',
-    unless  => 'test -e /etc/ceph/client.admin',
+    unless  => '/usr/bin/test -e /etc/ceph/client.admin',
   }
 
   file { '/etc/ceph/client.admin':
@@ -31,14 +31,14 @@ class coe::ceph::combined(
   }
 
   exec { 'get-or-set virsh secret':
-    command => '/usr/bin/virsh secret-define --file /etc/ceph/secret.xml | /usr/bin/awk \'{print $2}\' | sed \'/^$/d\' > /etc/ceph/virsh.secret',
+    command => '/usr/bin/virsh secret-define --file /etc/ceph/secret.xml | /usr/bin/awk \'{print $2}\' | /bin/sed \'/^$/d\' > /etc/ceph/virsh.secret',
     creates => "/etc/ceph/virsh.secret",
-    unless  => "test -e /etc/ceph/virsh.secret",
+    unless  => "/usr/bin/test -e /etc/ceph/virsh.secret",
     require => File['/etc/ceph/secret.xml'],
   }
 
   exec { 'set-secret-value virsh':
-    command => "/usr/bin/virsh secret-set-value --secret $(cat /etc/ceph/virsh.secret) --base64 $(ceph auth get-key client.admin)",
+    command => "/usr/bin/virsh secret-set-value --secret $(/bin/cat /etc/ceph/virsh.secret) --base64 $(/usr/bin/ceph auth get-key client.admin)",
     require => Exec['get-or-set virsh secret'],
   }
 
@@ -59,6 +59,4 @@ class coe::ceph::combined(
       require => Exec['set-secret-value virsh'],
     }
   }
-
-
 }
