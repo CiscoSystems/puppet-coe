@@ -29,7 +29,8 @@ $nexus_config      = undef
     require => Package['quantum-server']
   }
   nexus_creds{ $nexus_credentials:
-    require => File['/var/lib/quantum/.ssh']
+    require => [ File['/var/lib/quantum/.ssh'],
+                 File['/etc/quantum/plugins/cisco/nexus.ini'] ]
   }
 }
 
