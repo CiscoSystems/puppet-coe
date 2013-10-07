@@ -38,12 +38,10 @@ class coe::network::interface(
   $onboot         = 'true'
 ) {
 
-  include network
-
   network_config { $interface_name:
     ensure     => $ensure,
     hotplug    => $hotplug,
-    family     => $fmaily,
+    family     => $family,
     method     => $method,
     ipaddress  => $ipaddress,
     netmask    => $netmask,
