@@ -159,10 +159,11 @@ UcXHbA==
   }
 
   # /etc/hosts entries for the controller nodes
-  host { "$controller_hostname.$domain_name":
+  ensure_resource ( 'host', "$controller_hostname.$domain_name", {
     ip           => $controller_node_internal,
     host_aliases => $controller_hostname,
-  }
+    }
+  )
 
   include collectd
 }
