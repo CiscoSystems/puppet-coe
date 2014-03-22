@@ -36,25 +36,28 @@ class coe::network::interface(
   $family         = 'inet',
   $method         = 'static',
   $onboot         = 'true',
-  $options        = undef
+  $options        = undef,
+  $enabled        = true,
 ) {
 
-  network_config { $interface_name:
-    ensure     => $ensure,
-    hotplug    => $hotplug,
-    family     => $family,
-    method     => $method,
-    ipaddress  => $ipaddress,
-    netmask    => $netmask,
-    onboot     => $onboot,
-    notify     => Exec['network-restart'],
-    options    => $options
-  }
+  if ($enable) {
+    network_config { $interface_name:
+      ensure     => $ensure,
+      hotplug    => $hotplug,
+      family     => $family,
+      method     => $method,
+      ipaddress  => $ipaddress,
+      netmask    => $netmask,
+      onboot     => $onboot,
+      notify     => Exec['network-restart'],
+      options    => $options
+    }
 
-  # Changed from service to exec due to Ubuntu bug #440179
-  exec { 'network-restart':
-    command     => '/etc/init.d/networking restart',
-    path        => '/usr/bin:/usr/sbin:/bin:/sbin',
-    refreshonly => true
+    # Changed from service to exec due to Ubuntu bug #440179
+    exec { 'network-restart':
+      command     => '/etc/init.d/networking restart',
+      path        => '/usr/bin:/usr/sbin:/bin:/sbin',
+      refreshonly => true
+    }
   }
 }

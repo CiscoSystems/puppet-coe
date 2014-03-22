@@ -18,7 +18,6 @@ class coe::base(
   $ubuntu_repo             = 'updates',
   # optional external services
   $node_gateway            = false,
-  $proxy                   = false,
 ) {
 
   # Disable pipelining to avoid unfortunate interactions between apt and
@@ -86,7 +85,6 @@ UcXHbA==
         release     => "${openstack_release}${pocket}",
         repos       => "main",
         key         => "E8CC67053ED3B199",
-        proxy       => $proxy,
         key_content => $cisco_key_content,
       }
 
@@ -101,7 +99,6 @@ UcXHbA==
           release     => "${openstack_release}${pocket}",
           repos       => "main",
           key         => "E8CC67053ED3B199",
-          proxy       => $proxy,
           key_content => $cisco_key_content,
         }
         apt::pin { "cisco_supplemental":
@@ -163,6 +160,4 @@ UcXHbA==
     ip           => $controller_node_internal,
     host_aliases => $controller_hostname,
   }
-
-  include collectd
 }
