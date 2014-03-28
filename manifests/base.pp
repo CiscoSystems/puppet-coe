@@ -145,6 +145,12 @@ ykz5a/8840rWqc7sLA7lKA==
     }
 
     # Load apt prerequisites.  This is only valid on Ubuntu systmes
+    #
+    # package_repo can be one of:
+    #   cisco_repo -- get OpenStack from Cisco COI repos
+    #   cloud_archive -- add the Canonical UCA PPA and get OpenStack from it
+    #   ubuntu -- use the 'native' packages included in the ubuntu release
+    
     if($package_repo == 'cisco_repo') {
       apt::source { "cisco-openstack-mirror_${openstack_release}":
         location    => "${openstack_repo_location_real}",
@@ -187,7 +193,9 @@ ykz5a/8840rWqc7sLA7lKA==
         }
       }
     } else {
-      fail("Unsupported package repo ${package_repo}")
+      if $package_repo != 'ubuntu' {
+        fail("Unsupported package repo ${package_repo}")
+      }
     }
 
     # Set up the puppet module repo.
