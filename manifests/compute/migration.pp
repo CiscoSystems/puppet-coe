@@ -43,7 +43,7 @@ class coe::compute::migration(
 
   if $migration_support {
 
-    ensure_packages('nfs-common')
+    ensure_packages(['nfs-common'])
 
     if $nfs_mount_path and $nfs_mount_device {
       file { $nfs_mount_path:
