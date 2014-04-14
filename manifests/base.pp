@@ -254,6 +254,4 @@ ykz5a/8840rWqc7sLA7lKA==
     host_aliases => $controller_hostname,
     }
   )
-
-  include collectd
 }
