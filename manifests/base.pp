@@ -164,6 +164,4 @@ UcXHbA==
     host_aliases => $controller_hostname,
     }
   )
-
-  include collectd
 }
