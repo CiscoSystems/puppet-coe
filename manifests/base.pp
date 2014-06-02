@@ -21,6 +21,7 @@ class coe::base(
   # optional external services
   $node_gateway            = false,
   $proxy                   = false,
+  $disableml2              = true,
 ) {
 
   # Disable pipelining to avoid unfortunate interactions between apt and
@@ -254,4 +255,37 @@ ykz5a/8840rWqc7sLA7lKA==
     host_aliases => $controller_hostname,
     }
   )
+
+  # currently ml2 is enabled regardless; it's a bug. this is a temp fix.
+  if $disableml2 and defined(Package['neutron-server']) and defined(Service['neutron-server']) and defined(Package['neutron-plugin-openvswitch-agent']) {
+
+    file_line { 'change default file':
+      path    => '/etc/default/neutron-server',
+      line    => '#NEUTRON_PLUGIN_CONFIG="/etc/neutron/plugins/ml2/ml2_conf.ini"',
+      match   => 'NEUTRON_PLUGIN_CONFIG="/etc/neutron/plugins/ml2/ml2_conf.ini"',
+      require => Package['neutron-server'],
+      notify  => Service['neutron-server'],
+    }
+
+    file_line { 'comment init file':
+      path  => '/etc/init/neutron-plugin-openvswitch-agent.conf',
+      line  => '#exec start-stop-daemon --start --chuid neutron --exec /usr/bin/neutron-openvswitch-agent -- --config-file=/etc/neutron/neutron.conf --config-file=/etc/neutron/plugins/ml2/ml2_conf.ini --log-file=/var/log/neutron/openvswitch-agent.log',
+      match => 'exec start-stop-daemon --start --chuid neutron --exec /usr/bin/neutron-openvswitch-agent -- --config-file=/etc/neutron/neutron.conf --config-file=/etc/neutron/plugins/ml2/ml2_conf.ini --log-file=/var/log/neutron/openvswitch-agent.log',
+      require => [ Package['neutron-plugin-openvswitch-agent'], File_line['change default file'] ],
+    }
+
+    file_line { 'add modified exec to init':
+      path    => '/etc/init/neutron-plugin-openvswitch-agent.conf',
+      line    => 'exec start-stop-daemon --start --chuid neutron --exec /usr/bin/neutron-openvswitch-agent -- --config-file=/etc/neutron/neutron.conf --log-file=/var/log/neutron/openvswitch-agent.log',
+      require => File_line['comment init file'],
+    }
+
+    exec { 'bound neutron-plugin-openvswitch-agent':
+      command => '/sbin/stop neutron-plugin-openvswitch-agent && sleep 1 && /sbin/start neutron-plugin-openvswitch-agent',
+      require => File_line['add modified exec to init'],
+      unless  => '/bin/ps -ef | /bin/grep neutron-openvswitch-agent | /bin/grep -v grep | /bin/grep -v ml2',
+    }
+  }
+
+
 }
